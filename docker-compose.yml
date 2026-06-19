@@ -1,0 +1,30 @@
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php856_workspace_interprocess
+    ports:
+      - "8000:8000"  # Para o PHP embutido ou Laravel
+      - "9003:9003"  # Para o Xdebug
+      - "5173:5173"  # expondo o Vite
+    volumes:
+      - ./:/var/www
+    environment:
+      - PHP_VERSION=8.5.6
+      - XDEBUG_MODE=debug
+      - XDEBUG_CLIENT_HOST=host.docker.internal
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:18.4
+    container_name: postgres_interprocess
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: laravel_db
+      POSTGRES_USER: laravel_user
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - ./pgdata:/var/lib/postgresql/18/docker  # Dados do banco salvos localmente
