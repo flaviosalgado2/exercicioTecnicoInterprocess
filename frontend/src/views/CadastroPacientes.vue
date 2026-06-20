@@ -170,7 +170,7 @@ export default {
             <button type="button" class="btn-close" @click="mensagem = ''"></button>
           </div>
 
-          <PacienteFilters :modelValue="filtros" @filter="aoFiltrar" />
+          <PacienteFilters :filtros="filtros" @filter="aoFiltrar" />
 
           <div class="mt-4">
             <PacienteTable

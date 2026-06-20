@@ -8,7 +8,7 @@ export default {
     imask: IMaskDirective,
   },
   props: {
-    modelValue: {
+    filtros: {
       type: Object,
       default: () => ({ nome: '', cpf: '', status: '' }),
     },
@@ -16,13 +16,13 @@ export default {
   emits: ['filter'],
   data() {
     return {
-      valores: { ...this.modelValue },
-      cpfMascarado: formatarCpf(this.modelValue.cpf || ''),
+      valores: { ...this.filtros },
+      cpfMascarado: formatarCpf(this.filtros.cpf || ''),
       cpfMask: cpfMaskOptions,
     }
   },
   watch: {
-    modelValue(novos) {
+    filtros(novos) {
       this.valores = { ...novos }
       this.cpfMascarado = formatarCpf(novos.cpf || '')
     },
