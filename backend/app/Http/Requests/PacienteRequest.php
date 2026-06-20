@@ -27,9 +27,9 @@ class PacienteRequest extends FormRequest
                 Rule::unique('pacientes', 'cpf')->ignore($pacienteId),
             ],
             'sexo' => ['required', 'in:M,F'],
-            'cep' => ['required', 'string', 'size:8'],
-            'cidade' => ['required', 'string', 'max:255'],
-            'endereco' => ['required', 'string', 'max:255'],
+            'cep' => ['nullable', 'string', 'size:8'],
+            'cidade' => ['nullable', 'string', 'max:255'],
+            'endereco' => ['nullable', 'string', 'max:255'],
             'complemento' => ['nullable', 'string', 'max:255'],
             'status' => ['required', 'in:ativo,inativo'],
         ];
