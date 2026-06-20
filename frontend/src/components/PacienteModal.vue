@@ -1,6 +1,7 @@
 <script>
 import { IMaskDirective } from 'vue-imask'
 import { cpfMaskOptions, limparCpf, validarCpf } from '@/utils/cpf'
+import { verificarCpfDuplicado } from '@/services/pacienteService'
 
 export default {
   name: 'PacienteModal',
@@ -18,6 +19,8 @@ export default {
     return {
       form: this.novoForm(),
       erroCpf: '',
+      verificandoCpf: false,
+      cancelando: false,
       cpfMask: cpfMaskOptions,
     }
   },
@@ -54,6 +57,7 @@ export default {
       }
     },
     fechar() {
+      this.cancelando = false
       this.$refs.modalElement && window.bootstrap.Modal.getInstance(this.$refs.modalElement)?.hide()
     },
     abrir() {
@@ -63,7 +67,12 @@ export default {
     aoAceitarCpf(event) {
       this.form.cpf = event.detail._value
     },
-    validar() {
+    async validar() {
+      if (this.cancelando) {
+        this.cancelando = false
+        return true
+      }
+
       this.erroCpf = ''
 
       if (!this.form.cpf) {
@@ -76,10 +85,36 @@ export default {
         return false
       }
 
+      const cpfLimpo = limparCpf(this.form.cpf)
+      const cpfAtual = this.paciente ? limparCpf(this.paciente.cpf) : ''
+
+      if (cpfLimpo === cpfAtual) {
+        return true
+      }
+
+      this.verificandoCpf = true
+
+      try {
+        const resposta = await verificarCpfDuplicado(cpfLimpo)
+
+        if (resposta.existe) {
+          this.erroCpf = 'CPF já cadastrado'
+          return false
+        }
+      } catch {
+        this.erroCpf = 'Erro ao verificar CPF'
+        return false
+      } finally {
+        this.verificandoCpf = false
+      }
+
       return true
     },
-    salvar() {
-      if (!this.validar()) return
+    async salvar() {
+      if (this.verificandoCpf) return
+
+      const valido = await this.validar()
+      if (!valido) return
 
       const dados = { ...this.form, cpf: limparCpf(this.form.cpf) }
       this.$emit('save', dados)
@@ -167,7 +202,7 @@ export default {
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @mousedown="cancelando = true">Cancelar</button>
           <button type="button" class="btn btn-primary" @click="salvar">Salvar</button>
         </div>
       </div>

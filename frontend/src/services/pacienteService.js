@@ -60,3 +60,7 @@ export function inativar(id) {
     method: 'DELETE',
   })
 }
+
+export function verificarCpfDuplicado(cpf) {
+  return request(`${API_URL}/verificar-cpf-duplicado?${buildQuery({ cpf })}`)
+}
