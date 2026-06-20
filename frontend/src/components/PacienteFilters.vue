@@ -1,8 +1,12 @@
 <script>
-import { formatarCpf, limparCpf } from '@/utils/cpf'
+import { IMaskDirective } from 'vue-imask'
+import { cpfMaskOptions, formatarCpf, limparCpf } from '@/utils/cpf'
 
 export default {
   name: 'PacienteFilters',
+  directives: {
+    imask: IMaskDirective,
+  },
   emits: ['filter'],
   data() {
     return {
@@ -11,24 +15,25 @@ export default {
         cpf: '',
         status: '',
       },
+      cpfMascarado: '',
+      cpfMask: cpfMaskOptions,
     }
   },
-  computed: {
-    cpfFormatado: {
-      get() {
-        return formatarCpf(this.filtros.cpf)
-      },
-      set(valor) {
-        this.filtros.cpf = limparCpf(valor)
-      },
+  watch: {
+    'filtros.cpf'(novo) {
+      this.cpfMascarado = formatarCpf(novo)
     },
   },
   methods: {
+    aoAceitarCpf(event) {
+      this.filtros.cpf = limparCpf(event.detail._value)
+    },
     buscar() {
       this.$emit('filter', { ...this.filtros })
     },
     limpar() {
       this.filtros = { nome: '', cpf: '', status: '' }
+      this.cpfMascarado = ''
       this.$emit('filter', { ...this.filtros })
     },
   },
@@ -39,11 +44,21 @@ export default {
   <div class="row g-3 align-items-end">
     <div class="col-md-4">
       <label for="filtro-nome" class="form-label">Nome</label>
-      <input id="filtro-nome" v-model="filtros.nome" type="text" class="form-control" placeholder="Buscar por nome" @keyup.enter="buscar" />
+      <input id="filtro-nome" v-model="filtros.nome" type="text" class="form-control" placeholder="Buscar por nome" maxlength="255" @keyup.enter="buscar" />
     </div>
     <div class="col-md-3">
       <label for="filtro-cpf" class="form-label">CPF</label>
-      <input id="filtro-cpf" v-model="cpfFormatado" type="text" class="form-control" placeholder="000.000.000-00" @keyup.enter="buscar" />
+      <input
+        id="filtro-cpf"
+        v-model="cpfMascarado"
+        v-imask="cpfMask"
+        @accept="aoAceitarCpf"
+        type="text"
+        class="form-control"
+        placeholder="000.000.000-00"
+        maxlength="14"
+        @keyup.enter="buscar"
+      />
     </div>
     <div class="col-md-3">
       <label for="filtro-status" class="form-label">Status</label>

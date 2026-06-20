@@ -9,10 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fnando/cpf": "^1.0.2",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.8",
     "pinia": "^3.0.4",
     "vue": "^3.5.38",
+    "vue-imask": "^7.6.1",
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
