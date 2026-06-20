@@ -18,9 +18,9 @@ export default {
   },
   data() {
     return {
-      filtros: {},
-      pagina: 1,
-      porPagina: 10,
+      filtros: this.lerFiltros(this.$route.query),
+      pagina: Number(this.$route.query.page) || 1,
+      porPagina: Number(this.$route.query.per_page) || 10,
       pacienteEdicao: null,
       pacienteVisualizacao: null,
       mensagem: '',
@@ -28,7 +28,15 @@ export default {
     }
   },
   computed: {
-    ...mapState(usePacientesStore, ['pacientes', 'meta', 'carregando', 'erro']),
+    ...mapState(usePacientesStore, ['pacientes', 'meta', 'carregando']),
+  },
+  watch: {
+    '$route.query'(query) {
+      this.filtros = this.lerFiltros(query)
+      this.pagina = Number(query.page) || 1
+      this.porPagina = Number(query.per_page) || 10
+      this.carregar()
+    },
   },
   mounted() {
     this.carregar()
@@ -36,19 +44,37 @@ export default {
   methods: {
     ...mapActions(usePacientesStore, ['listar', 'salvar', 'inativar']),
 
-    async carregar() {
-      await this.listar(this.filtros, this.pagina, this.porPagina)
+    lerFiltros(query) {
+      return {
+        nome: query.nome || '',
+        cpf: query.cpf || '',
+        status: query.status || '',
+      }
+    },
+
+    syncUrl() {
+      const query = {}
+      if (this.filtros.nome) query.nome = this.filtros.nome
+      if (this.filtros.cpf) query.cpf = this.filtros.cpf
+      if (this.filtros.status) query.status = this.filtros.status
+      if (this.pagina !== 1) query.page = String(this.pagina)
+      if (this.porPagina !== 10) query.per_page = String(this.porPagina)
+      this.$router.replace({ query })
+    },
+
+    carregar() {
+      this.listar(this.filtros, this.pagina, this.porPagina)
     },
 
     aoFiltrar(novosFiltros) {
       this.filtros = novosFiltros
       this.pagina = 1
-      this.carregar()
+      this.syncUrl()
     },
 
     aoMudarPagina(novaPagina) {
       this.pagina = novaPagina
-      this.carregar()
+      this.syncUrl()
     },
 
     abrirCadastro() {
@@ -63,9 +89,7 @@ export default {
 
     visualizar(paciente) {
       this.pacienteVisualizacao = { ...paciente }
-      this.$nextTick(() => {
-        this.$refs.modalVisualizacao.abrir()
-      })
+      this.$refs.modalVisualizacao.abrir()
     },
 
     async salvarPaciente(dados) {
@@ -103,7 +127,7 @@ export default {
           confirmButtonText: 'OK',
         })
         this.carregar()
-      } catch (erro) {
+      } catch {
         this.mostrarMensagem('Erro ao inativar paciente', 'danger')
       }
     },
@@ -111,9 +135,7 @@ export default {
     mostrarMensagem(texto, tipo) {
       this.mensagem = texto
       this.tipoMensagem = tipo
-      setTimeout(() => {
-        this.mensagem = ''
-      }, 5000)
+      setTimeout(() => (this.mensagem = ''), 5000)
     },
   },
 }
@@ -148,7 +170,7 @@ export default {
             <button type="button" class="btn-close" @click="mensagem = ''"></button>
           </div>
 
-          <PacienteFilters @filter="aoFiltrar" />
+          <PacienteFilters :modelValue="filtros" @filter="aoFiltrar" />
 
           <div class="mt-4">
             <PacienteTable
