@@ -23,7 +23,7 @@ class PacienteRequest extends FormRequest
                 'required',
                 'string',
                 'size:11',
-                $this->validarCpf(),
+                'cpf',
                 Rule::unique('pacientes', 'cpf')->ignore($pacienteId),
             ],
             'sexo' => ['required', 'in:M,F'],
@@ -33,37 +33,5 @@ class PacienteRequest extends FormRequest
             'complemento' => ['nullable', 'string', 'max:255'],
             'status' => ['required', 'in:ativo,inativo'],
         ];
-    }
-
-    private function validarCpf(): \Closure
-    {
-        return function (string $attribute, mixed $value, \Closure $fail): void {
-            if (! $this->cpfValido($value)) {
-                $fail('O CPF informado é inválido.');
-            }
-        };
-    }
-
-    private function cpfValido(string $cpf): bool
-    {
-        if (preg_match('/^(\d)\1{10}$/', $cpf)) {
-            return false;
-        }
-
-        for ($posicao = 9; $posicao < 11; $posicao++) {
-            $soma = 0;
-
-            for ($indice = 0; $indice < $posicao; $indice++) {
-                $soma += (int) $cpf[$indice] * (($posicao + 1) - $indice);
-            }
-
-            $digito = ((10 * $soma) % 11) % 10;
-
-            if ($digito !== (int) $cpf[$posicao]) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
