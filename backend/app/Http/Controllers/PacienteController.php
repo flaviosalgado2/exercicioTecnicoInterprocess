@@ -50,4 +50,11 @@ class PacienteController extends Controller
 
         return response()->json($paciente);
     }
+
+    public function verificarCpfDuplicado(Request $request): JsonResponse
+    {
+        $existe = Paciente::where('cpf', $request->input('cpf'))->exists();
+
+        return response()->json(['existe' => $existe]);
+    }
 }
