@@ -81,11 +81,27 @@ export default {
     },
 
     async inativarPaciente(paciente) {
-      if (!confirm(`Deseja inativar o paciente ${paciente.nome}?`)) return
+      const result = await window.Swal.fire({
+        title: 'Inativar paciente?',
+        text: `Deseja inativar o paciente ${paciente.nome}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, inativar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+      })
+
+      if (!result.isConfirmed) return
 
       try {
         await this.inativar(paciente.id)
-        this.mostrarMensagem('Paciente inativado com sucesso', 'success')
+        await window.Swal.fire({
+          title: 'Sucesso!',
+          text: 'Paciente inativado com sucesso',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        })
         this.carregar()
       } catch (erro) {
         this.mostrarMensagem('Erro ao inativar paciente', 'danger')
