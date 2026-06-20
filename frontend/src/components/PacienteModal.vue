@@ -1,6 +1,6 @@
 <script>
 import { IMaskDirective } from 'vue-imask'
-import { cpfMaskOptions, formatarCpf, limparCpf, validarCpf } from '@/utils/cpf'
+import { cpfMaskOptions, limparCpf, validarCpf } from '@/utils/cpf'
 
 export default {
   name: 'PacienteModal',
@@ -18,7 +18,6 @@ export default {
     return {
       form: this.novoForm(),
       erroCpf: '',
-      cpfMascarado: '',
       cpfMask: cpfMaskOptions,
     }
   },
@@ -27,11 +26,10 @@ export default {
       immediate: true,
       handler(novo) {
         if (novo) {
-          this.form = { ...novo }
+          this.form = { ...novo, cpf: limparCpf(novo.cpf) }
         } else {
           this.form = this.novoForm()
         }
-        this.cpfMascarado = formatarCpf(this.form.cpf)
         this.erroCpf = ''
       },
     },
@@ -63,7 +61,7 @@ export default {
       modal.show()
     },
     aoAceitarCpf(event) {
-      this.form.cpf = limparCpf(event.detail._value)
+      this.form.cpf = event.detail._value
     },
     validar() {
       this.erroCpf = ''
@@ -83,7 +81,8 @@ export default {
     salvar() {
       if (!this.validar()) return
 
-      this.$emit('save', { ...this.form })
+      const dados = { ...this.form, cpf: limparCpf(this.form.cpf) }
+      this.$emit('save', dados)
     },
   },
 }
@@ -108,9 +107,10 @@ export default {
                 <label for="cpf" class="form-label">CPF</label>
                 <input
                   id="cpf"
-                  v-model="cpfMascarado"
+                  v-model="form.cpf"
                   v-imask="cpfMask"
                   @accept="aoAceitarCpf"
+                  @blur="validar"
                   type="text"
                   class="form-control"
                   :class="{ 'is-invalid': erroCpf }"
