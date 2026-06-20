@@ -57,4 +57,17 @@ class PacienteController extends Controller
 
         return response()->json(['existe' => $existe]);
     }
+
+    public function ativos(Request $request): JsonResponse
+    {
+        $pacientes = Paciente::where('status', 'ativo')
+            ->when($request->input('nome'), function ($query, $nome) {
+                $query->where('nome', 'ilike', '%'.$nome.'%');
+            })
+            ->orderBy('nome')
+            ->limit(50)
+            ->get(['id', 'nome']);
+
+        return response()->json($pacientes);
+    }
 }
