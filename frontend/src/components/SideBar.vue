@@ -53,6 +53,16 @@ export default {
             </a>
           </router-link>
         </li>
+        <li class="nav-item" :class="{ active: $route.path === '/registro-atendimentos' }">
+          <router-link to="/registro-atendimentos" custom v-slot="{ href, navigate, isActive }">
+            <a :href="href" @click="navigate" class="nav-link d-flex align-items-center" :class="{ active: isActive }">
+              <span class="sidebar-icon icon-holder">
+                <svg class="icon icon-xs" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 10-2 0v2a1 1 0 102 0V9z" clip-rule="evenodd"></path></svg>
+              </span>
+              <span class="sidebar-text">Registro de Atendimentos</span>
+            </a>
+          </router-link>
+        </li>
       </ul>
     </div>
   </nav>
