@@ -18,7 +18,7 @@ export default {
     <div class="col-12 mb-4">
       <div class="card bg-yellow-100 border-0 shadow">
         <div class="card-body">
-          <h2 class="h5">Bem Vindo ao Sistema de Registro de Atendimento da Interprocess</h2>
+          <h2 class="h5">Bem Vindo <span class="text-danger">CLÍNICA ACME</span> ao Sistema de Registro de Atendimento da Interprocess</h2>
         </div>
       </div>
     </div>
