@@ -18,7 +18,7 @@ export default {
   data() {
     return {
       form: this.novoForm(),
-      erroCpf: '',
+      erros: {},
       verificandoCpf: false,
       cancelando: false,
       cpfMask: cpfMaskOptions,
@@ -33,7 +33,7 @@ export default {
         } else {
           this.form = this.novoForm()
         }
-        this.erroCpf = ''
+        this.limparErros()
       },
     },
   },
@@ -56,6 +56,14 @@ export default {
         status: 'ativo',
       }
     },
+    limparErros() {
+      this.erros = {}
+    },
+    limparErro(campo) {
+      if (this.erros[campo]) {
+        delete this.erros[campo]
+      }
+    },
     fechar() {
       this.cancelando = false
       this.$refs.modalElement && window.bootstrap.Modal.getInstance(this.$refs.modalElement)?.hide()
@@ -67,21 +75,36 @@ export default {
     aoAceitarCpf(event) {
       this.form.cpf = event.detail._value
     },
+    validarObrigatorios() {
+      const camposObrigatorios = {
+        nome: 'O Nome é obrigatório',
+        data_nascimento: 'A Data de Nascimento é obrigatória',
+        cpf: 'O CPF é obrigatório',
+        sexo: 'O Sexo é obrigatório',
+        status: 'O Status é obrigatório',
+      }
+
+      for (const [campo, mensagem] of Object.entries(camposObrigatorios)) {
+        if (!this.form[campo]) {
+          this.erros[campo] = mensagem
+        }
+      }
+    },
     async validar() {
       if (this.cancelando) {
         this.cancelando = false
         return true
       }
 
-      this.erroCpf = ''
+      this.limparErros()
+      this.validarObrigatorios()
 
-      if (!this.form.cpf) {
-        this.erroCpf = 'O CPF é obrigatório'
+      if (this.erros.cpf) {
         return false
       }
 
       if (!validarCpf(this.form.cpf)) {
-        this.erroCpf = 'CPF inválido'
+        this.erros.cpf = 'CPF inválido'
         return false
       }
 
@@ -89,7 +112,7 @@ export default {
       const cpfAtual = this.paciente ? limparCpf(this.paciente.cpf) : ''
 
       if (cpfLimpo === cpfAtual) {
-        return true
+        return Object.keys(this.erros).length === 0
       }
 
       this.verificandoCpf = true
@@ -98,17 +121,17 @@ export default {
         const resposta = await verificarCpfDuplicado(cpfLimpo)
 
         if (resposta.existe) {
-          this.erroCpf = 'CPF já cadastrado'
+          this.erros.cpf = 'CPF já cadastrado'
           return false
         }
       } catch {
-        this.erroCpf = 'Erro ao verificar CPF'
+        this.erros.cpf = 'Erro ao verificar CPF'
         return false
       } finally {
         this.verificandoCpf = false
       }
 
-      return true
+      return Object.keys(this.erros).length === 0
     },
     async salvar() {
       if (this.verificandoCpf) return
@@ -136,7 +159,16 @@ export default {
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="nome" class="form-label">Nome</label>
-                <input id="nome" v-model="form.nome" type="text" class="form-control" maxlength="255" required />
+                <input
+                  id="nome"
+                  v-model="form.nome"
+                  @input="limparErro('nome')"
+                  type="text"
+                  class="form-control"
+                  :class="{ 'is-invalid': erros.nome }"
+                  maxlength="255"
+                />
+                <div v-if="erros.nome" class="invalid-feedback">{{ erros.nome }}</div>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="cpf" class="form-label">CPF</label>
@@ -146,44 +178,59 @@ export default {
                   v-imask="cpfMask"
                   @accept="aoAceitarCpf"
                   @blur="validar"
+                  @input="limparErro('cpf')"
                   type="text"
                   class="form-control"
-                  :class="{ 'is-invalid': erroCpf }"
+                  :class="{ 'is-invalid': erros.cpf }"
                   placeholder="000.000.000-00"
                   maxlength="14"
-                  required
                 />
-                <div v-if="erroCpf" class="invalid-feedback">{{ erroCpf }}</div>
+                <div v-if="erros.cpf" class="invalid-feedback">{{ erros.cpf }}</div>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="data_nascimento" class="form-label">Data de Nascimento</label>
-                <input id="data_nascimento" v-model="form.data_nascimento" type="date" class="form-control" required />
+                <input
+                  id="data_nascimento"
+                  v-model="form.data_nascimento"
+                  @input="limparErro('data_nascimento')"
+                  type="date"
+                  class="form-control"
+                  :class="{ 'is-invalid': erros.data_nascimento }"
+                />
+                <div v-if="erros.data_nascimento" class="invalid-feedback">{{ erros.data_nascimento }}</div>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="sexo" class="form-label">Sexo</label>
-                <select id="sexo" v-model="form.sexo" class="form-select" required>
+                <select
+                  id="sexo"
+                  v-model="form.sexo"
+                  @change="limparErro('sexo')"
+                  class="form-select"
+                  :class="{ 'is-invalid': erros.sexo }"
+                >
                   <option value="">Selecione</option>
                   <option value="M">Masculino</option>
                   <option value="F">Feminino</option>
                 </select>
+                <div v-if="erros.sexo" class="invalid-feedback">{{ erros.sexo }}</div>
               </div>
             </div>
             <div class="row">
               <div class="col-md-4 mb-3">
                 <label for="cep" class="form-label">CEP</label>
-                <input id="cep" v-model="form.cep" type="text" class="form-control" maxlength="8" required />
+                <input id="cep" v-model="form.cep" type="text" class="form-control" maxlength="8" />
               </div>
               <div class="col-md-8 mb-3">
                 <label for="cidade" class="form-label">Cidade</label>
-                <input id="cidade" v-model="form.cidade" type="text" class="form-control" maxlength="255" required />
+                <input id="cidade" v-model="form.cidade" type="text" class="form-control" maxlength="255" />
               </div>
             </div>
             <div class="row">
               <div class="col-md-8 mb-3">
                 <label for="endereco" class="form-label">Endereço</label>
-                <input id="endereco" v-model="form.endereco" type="text" class="form-control" maxlength="255" required />
+                <input id="endereco" v-model="form.endereco" type="text" class="form-control" maxlength="255" />
               </div>
               <div class="col-md-4 mb-3">
                 <label for="complemento" class="form-label">Complemento</label>
@@ -193,10 +240,17 @@ export default {
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="status" class="form-label">Status</label>
-                <select id="status" v-model="form.status" class="form-select" required>
+                <select
+                  id="status"
+                  v-model="form.status"
+                  @change="limparErro('status')"
+                  class="form-select"
+                  :class="{ 'is-invalid': erros.status }"
+                >
                   <option value="ativo">Ativo</option>
                   <option value="inativo">Inativo</option>
                 </select>
+                <div v-if="erros.status" class="invalid-feedback">{{ erros.status }}</div>
               </div>
             </div>
           </form>

@@ -12,6 +12,9 @@ npm run dev -- --host
 
 php artisan test
 
+#popular o banco
+php artisan db:seed
+
 #Design Layout Feito encima de:
 https://github.com/themesberg/volt-bootstrap-5-dashboard
 
