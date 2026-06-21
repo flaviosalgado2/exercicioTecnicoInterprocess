@@ -36,7 +36,7 @@ class AtendimentoService
         return $query->orderByDesc('data_hora')->paginate($porPagina);
     }
 
-    public function buscar(int $id): Atendimento
+    public function buscar(string $id): Atendimento
     {
         return Atendimento::with('paciente')->findOrFail($id);
     }

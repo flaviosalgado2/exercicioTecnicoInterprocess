@@ -12,6 +12,8 @@ npm run dev -- --host
 
 php artisan test
 
+docker-compose restart
+
 #popular o banco
 php artisan db:seed
 

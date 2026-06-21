@@ -16,7 +16,7 @@ class AtendimentoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'paciente_id' => ['required', 'integer', 'exists:pacientes,id'],
+            'paciente_id' => ['required', 'uuid', 'exists:pacientes,id'],
             'data_hora' => ['required', 'date', 'before_or_equal:now'],
             'descricao' => ['required', 'string'],
             'status' => ['required', Rule::in(['ativo', 'inativo'])],

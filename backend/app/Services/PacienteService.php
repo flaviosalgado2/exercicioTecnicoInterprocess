@@ -26,7 +26,7 @@ class PacienteService
         return $query->orderBy('nome')->paginate($porPagina);
     }
 
-    public function buscar(int $id): Paciente
+    public function buscar(string $id): Paciente
     {
         return Paciente::findOrFail($id);
     }
