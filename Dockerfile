@@ -38,7 +38,7 @@ ENV PATH="$PATH:/root/.composer/vendor/bin"
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm \
-    && npm install -g yarn
+    && npm install -g concurrently
 
 # Install Xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
