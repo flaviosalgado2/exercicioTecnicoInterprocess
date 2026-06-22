@@ -1,19 +1,20 @@
 <script>
 import AtendimentoFilters from '@/components/AtendimentoFilters.vue'
-import AtendimentoTable from '@/components/AtendimentoTable.vue'
 import AtendimentoModal from '@/components/AtendimentoModal.vue'
 import AtendimentoViewModal from '@/components/AtendimentoViewModal.vue'
+import TabelaRegistros from '@/components/TabelaRegistros.vue'
 import Pagination from '@/components/Pagination.vue'
 import { useAtendimentosStore } from '@/stores/atendimentos'
+import { formatarDataHora } from '@/utils/data'
 import { mapState, mapActions } from 'pinia'
 
 export default {
   name: 'RegistroAtendimentos',
   components: {
     AtendimentoFilters,
-    AtendimentoTable,
     AtendimentoModal,
     AtendimentoViewModal,
+    TabelaRegistros,
     Pagination,
   },
   data() {
@@ -25,6 +26,12 @@ export default {
       atendimentoVisualizacao: null,
       mensagem: '',
       tipoMensagem: '',
+      colunas: [
+        { key: 'paciente.nome', label: 'Paciente', formatter: (_, item) => item.paciente?.nome || '-' },
+        { key: 'data_hora', label: 'Data e Hora', formatter: formatarDataHora },
+        { key: 'descricao', label: 'Descrição', formatter: this.descricaoResumida },
+        { key: 'status', label: 'Status', badge: true },
+      ],
     }
   },
   computed: {
@@ -43,6 +50,12 @@ export default {
   },
   methods: {
     ...mapActions(useAtendimentosStore, ['listar', 'salvar', 'inativar']),
+
+    descricaoResumida(descricao) {
+      if (!descricao) return '-'
+      const limpo = descricao.replace(/\n/g, ' ')
+      return limpo.length > 60 ? limpo.substring(0, 60) + '...' : limpo
+    },
 
     lerFiltros(query) {
       return {
@@ -175,9 +188,11 @@ export default {
           <AtendimentoFilters :filtros="filtros" @filter="aoFiltrar" />
 
           <div class="mt-4">
-            <AtendimentoTable
-              :atendimentos="atendimentos"
+            <TabelaRegistros
+              :items="atendimentos"
+              :colunas="colunas"
               :carregando="carregando"
+              mensagem-vazia="Nenhum atendimento encontrado"
               @view="visualizar"
               @edit="editar"
               @inactivate="inativarAtendimento"

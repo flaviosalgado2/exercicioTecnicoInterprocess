@@ -1,17 +1,19 @@
 <script>
+import TabelaRegistros from '@/components/TabelaRegistros.vue'
 import PacienteFilters from '@/components/PacienteFilters.vue'
-import PacienteTable from '@/components/PacienteTable.vue'
 import PacienteModal from '@/components/PacienteModal.vue'
 import PacienteViewModal from '@/components/PacienteViewModal.vue'
 import Pagination from '@/components/Pagination.vue'
 import { usePacientesStore } from '@/stores/pacientes'
+import { formatarCpf } from '@/utils/cpf'
+import { formatarData } from '@/utils/data'
 import { mapState, mapActions } from 'pinia'
 
 export default {
   name: 'CadastroPacientes',
   components: {
+    TabelaRegistros,
     PacienteFilters,
-    PacienteTable,
     PacienteModal,
     PacienteViewModal,
     Pagination,
@@ -25,6 +27,14 @@ export default {
       pacienteVisualizacao: null,
       mensagem: '',
       tipoMensagem: '',
+      colunas: [
+        { key: 'nome', label: 'Nome' },
+        { key: 'cpf', label: 'CPF', formatter: formatarCpf },
+        { key: 'data_nascimento', label: 'Nascimento', formatter: formatarData },
+        { key: 'sexo', label: 'Sexo', formatter: (sexo) => sexo === 'M' ? 'Masculino' : 'Feminino' },
+        { key: 'cidade', label: 'Cidade' },
+        { key: 'status', label: 'Status', badge: true },
+      ],
     }
   },
   computed: {
@@ -173,9 +183,11 @@ export default {
           <PacienteFilters :filtros="filtros" @filter="aoFiltrar" />
 
           <div class="mt-4">
-            <PacienteTable
-              :pacientes="pacientes"
+            <TabelaRegistros
+              :items="pacientes"
+              :colunas="colunas"
               :carregando="carregando"
+              mensagem-vazia="Nenhum paciente encontrado"
               @view="visualizar"
               @edit="editar"
               @inactivate="inativarPaciente"
