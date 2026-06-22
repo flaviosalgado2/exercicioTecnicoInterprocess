@@ -3,7 +3,7 @@ import AtendimentoFilters from '@/components/AtendimentoFilters.vue'
 import AtendimentoModal from '@/components/AtendimentoModal.vue'
 import AtendimentoViewModal from '@/components/AtendimentoViewModal.vue'
 import TabelaRegistros from '@/components/TabelaRegistros.vue'
-import Pagination from '@/components/Pagination.vue'
+import Paginacao from '@/components/Paginacao.vue'
 import { useAtendimentosStore } from '@/stores/atendimentos'
 import { formatarDataHora } from '@/utils/data'
 import { mapState, mapActions } from 'pinia'
@@ -15,7 +15,7 @@ export default {
     AtendimentoModal,
     AtendimentoViewModal,
     TabelaRegistros,
-    Pagination,
+    Paginacao,
   },
   data() {
     return {
@@ -200,7 +200,7 @@ export default {
           </div>
 
           <div class="d-flex justify-content-end mt-3">
-            <Pagination :meta="meta" @change="aoMudarPagina" />
+            <Paginacao :meta="meta" @change="aoMudarPagina" />
           </div>
         </div>
       </div>

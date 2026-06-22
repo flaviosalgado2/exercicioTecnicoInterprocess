@@ -3,7 +3,7 @@ import TabelaRegistros from '@/components/TabelaRegistros.vue'
 import PacienteFilters from '@/components/PacienteFilters.vue'
 import PacienteModal from '@/components/PacienteModal.vue'
 import PacienteViewModal from '@/components/PacienteViewModal.vue'
-import Pagination from '@/components/Pagination.vue'
+import Paginacao from '@/components/Paginacao.vue'
 import { usePacientesStore } from '@/stores/pacientes'
 import { formatarCpf } from '@/utils/cpf'
 import { formatarData } from '@/utils/data'
@@ -16,7 +16,7 @@ export default {
     PacienteFilters,
     PacienteModal,
     PacienteViewModal,
-    Pagination,
+    Paginacao,
   },
   data() {
     return {
@@ -195,7 +195,7 @@ export default {
           </div>
 
           <div class="d-flex justify-content-end mt-3">
-            <Pagination :meta="meta" @change="aoMudarPagina" />
+            <Paginacao :meta="meta" @change="aoMudarPagina" />
           </div>
         </div>
       </div>
