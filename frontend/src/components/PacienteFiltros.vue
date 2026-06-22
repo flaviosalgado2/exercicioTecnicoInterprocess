@@ -3,7 +3,7 @@ import { IMaskDirective } from 'vue-imask'
 import { cpfMaskOptions, formatarCpf, limparCpf } from '@/utils/cpf'
 
 export default {
-  name: 'PacienteFilters',
+  name: 'PacienteFiltros',
   directives: {
     imask: IMaskDirective,
   },

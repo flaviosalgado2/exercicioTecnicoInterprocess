@@ -1,6 +1,6 @@
 <script>
 import TabelaRegistros from '@/components/TabelaRegistros.vue'
-import PacienteFilters from '@/components/PacienteFilters.vue'
+import PacienteFiltros from '@/components/PacienteFiltros.vue'
 import PacienteModal from '@/components/PacienteModal.vue'
 import PacienteViewModal from '@/components/PacienteViewModal.vue'
 import Paginacao from '@/components/Paginacao.vue'
@@ -13,7 +13,7 @@ export default {
   name: 'CadastroPacientes',
   components: {
     TabelaRegistros,
-    PacienteFilters,
+    PacienteFiltros,
     PacienteModal,
     PacienteViewModal,
     Paginacao,
@@ -180,7 +180,7 @@ export default {
             <button type="button" class="btn-close" @click="mensagem = ''"></button>
           </div>
 
-          <PacienteFilters :filtros="filtros" @filter="aoFiltrar" />
+          <PacienteFiltros :filtros="filtros" @filter="aoFiltrar" />
 
           <div class="mt-4">
             <TabelaRegistros

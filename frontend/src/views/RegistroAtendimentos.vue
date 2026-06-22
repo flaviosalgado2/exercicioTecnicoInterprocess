@@ -1,5 +1,5 @@
 <script>
-import AtendimentoFilters from '@/components/AtendimentoFilters.vue'
+import AtendimentoFiltros from '@/components/AtendimentoFiltros.vue'
 import AtendimentoModal from '@/components/AtendimentoModal.vue'
 import AtendimentoViewModal from '@/components/AtendimentoViewModal.vue'
 import TabelaRegistros from '@/components/TabelaRegistros.vue'
@@ -11,7 +11,7 @@ import { mapState, mapActions } from 'pinia'
 export default {
   name: 'RegistroAtendimentos',
   components: {
-    AtendimentoFilters,
+    AtendimentoFiltros,
     AtendimentoModal,
     AtendimentoViewModal,
     TabelaRegistros,
@@ -185,7 +185,7 @@ export default {
             <button type="button" class="btn-close" @click="mensagem = ''"></button>
           </div>
 
-          <AtendimentoFilters :filtros="filtros" @filter="aoFiltrar" />
+          <AtendimentoFiltros :filtros="filtros" @filter="aoFiltrar" />
 
           <div class="mt-4">
             <TabelaRegistros
